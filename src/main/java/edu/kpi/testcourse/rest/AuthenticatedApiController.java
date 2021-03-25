@@ -1,7 +1,6 @@
 package edu.kpi.testcourse.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.kpi.testcourse.logic.Logic;
 import edu.kpi.testcourse.rest.models.ErrorResponse;
 import edu.kpi.testcourse.rest.models.UrlShortenRequest;
@@ -62,7 +61,7 @@ public class AuthenticatedApiController {
     try {
       String baseUrl = httpHostResolver.resolve(httpRequest);
       var shortenedUrl = baseUrl + "/r/"
-          + logic.createNewAlias(email, request.url(), request.alias());
+          + logic.createNewAlias(email, request.url(), request.alias(), baseUrl + "/r/");
       return HttpResponse.created(
         json.toJson(new UrlShortenResponse(shortenedUrl)));
     } catch (AliasAlreadyExist e) {

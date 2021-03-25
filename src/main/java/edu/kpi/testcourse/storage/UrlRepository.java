@@ -1,7 +1,6 @@
 package edu.kpi.testcourse.storage;
 
 import edu.kpi.testcourse.entities.UrlAlias;
-import edu.kpi.testcourse.entities.User;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -21,6 +20,11 @@ public interface UrlRepository {
    * Returns complete information about the URL alias with the given short name.
    */
   @Nullable UrlAlias findUrlAlias(String alias);
+
+  /**
+   * Returns complete information about the URL alias with the given short name.
+   */
+  boolean aliasIsExist(String alias);
 
   /**
    * Deletes the URL alias with the given short name.
