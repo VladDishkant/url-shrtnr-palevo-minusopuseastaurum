@@ -1,12 +1,10 @@
 package edu.kpi.testcourse.logic;
 
-import edu.kpi.testcourse.entities.UrlAlias;
 import edu.kpi.testcourse.entities.User;
 import edu.kpi.testcourse.storage.UrlRepository.AliasAlreadyExist;
 import edu.kpi.testcourse.storage.UrlRepositoryFakeImpl;
 import edu.kpi.testcourse.storage.UserRepositoryFakeImpl;
 import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -71,7 +69,8 @@ class LogicTest {
     Logic logic = createLogic(urls);
 
     // WHEN
-    var shortUrl = logic.createNewAlias("aaa@bbb.com", "http://g.com/loooong_url", "short");
+    var shortUrl = logic.createNewAlias("aaa@bbb.com", "http://g.com/loooong_url", "short",
+      "http:localhost:8080/users/shorten/r/");
 
     // THEN
     assertThat(shortUrl).isEqualTo("short");
@@ -84,11 +83,103 @@ class LogicTest {
     Logic logic = createLogic();
 
     // WHEN
-    var shortUrl = logic.createNewAlias("aaa@bbb.com", "http://g.com/loooong_url", "short");
+    var shortUrl = logic.createNewAlias("aaa@bbb.com", "http://g.com/loooong_url", "short",
+      "http://localhost:8080/users/shorten/r/");
 
     // THEN
     assertThatThrownBy(() -> {
-      logic.createNewAlias("ddd@bbb.com", "http://d.com/laaaang_url", "short");
+      logic.createNewAlias("ddd@bbb.com", "http://d.com/laaaang_url", "short",
+        "http://localhost:8080/users/shorten/r/");
     }).isInstanceOf(AliasAlreadyExist.class);
+  }
+
+  @Test
+  void generateAliasLength(){
+    Logic logic = createLogic();
+
+    String pathToShort = "http://localhost:8080/users/shorten/r/";
+    String alias = logic.generateAlias(pathToShort);
+
+    assertThat(alias.length()).isEqualTo(pathToShort.length()+5);
+  }
+
+  @Test
+  void generateAliasTheSame(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    String aliasSecond = logic.generateAlias(pathToShort);
+
+    assertThat(pathToShort+alias).isNotEqualTo(aliasSecond);
+  }
+
+  @Test
+  void createNewAliasIsExist(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    assertThat(logic.getUrlRepository().aliasIsExist(alias)).isEqualTo(true);
+  }
+
+  @Test
+  void createNewAliasIsNotExist(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    assertThat(logic.getUrlRepository().aliasIsExist("zzzzz")).isEqualTo(false);
+  }
+
+  @Test
+  void createNewAliasTheSameUrl(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    assertThat(logic.findFullUrl(alias)).isEqualTo(url);
+  }
+
+  @Test
+  void aliasIsExistTrue(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    assertThat(logic.getUrlRepository().aliasIsExist(alias)).isEqualTo(true);
+  }
+
+  @Test
+  void aliasIsExistFalse(){
+    Logic logic = createLogic();
+
+    String email = "admin@gmail.com";
+    String url = "https://google.com";
+    String alias = "ewfsf";
+    String pathToShort = "http://localhost:8080/urls/shorten/r/";
+    logic.createNewAlias(email, url, alias, pathToShort);
+
+    assertThat(logic.getUrlRepository().aliasIsExist("zzzzz")).isEqualTo(false);
   }
 }

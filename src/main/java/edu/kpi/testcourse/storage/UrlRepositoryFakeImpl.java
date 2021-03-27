@@ -12,6 +12,15 @@ import java.util.ArrayList;
 public class UrlRepositoryFakeImpl implements UrlRepository {
   private final HashMap<String, UrlAlias> aliases = new HashMap<>();
 
+  /**
+   * Gives an answer if current alias already exist or no.
+   *
+   * @param alias is a current alias
+   * @return true if alias is exist and false if no
+   */
+  public boolean aliasIsExist(String alias) {
+    return aliases.containsKey(alias);
+  }
 
   @Override
   public void createUrlAlias(UrlAlias urlAlias) {
